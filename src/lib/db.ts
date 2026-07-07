@@ -1,6 +1,7 @@
 import path from "path";
 import { PrismaClient } from "@/generated/prisma/client";
-import { PrismaLibSql } from "@prisma/adapter-libsql";
+import { PrismaLibSQL } from "@prisma/adapter-libsql/web";
+import { getTursoConfig } from "@/lib/env";
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
@@ -19,16 +20,12 @@ function resolveDatabaseUrl(): string {
 }
 
 function createPrismaClient(): PrismaClient {
-  const tursoUrl =
-    process.env.TURSO_DATABASE_URL ??
-    (process.env.DATABASE_URL?.startsWith("libsql:")
-      ? process.env.DATABASE_URL
-      : undefined);
+  const turso = getTursoConfig();
 
-  if (tursoUrl) {
-    const adapter = new PrismaLibSql({
-      url: tursoUrl,
-      authToken: process.env.TURSO_AUTH_TOKEN,
+  if (turso) {
+    const adapter = new PrismaLibSQL({
+      url: turso.url,
+      authToken: turso.authToken,
     });
     return new PrismaClient({ adapter });
   }
@@ -45,9 +42,4 @@ if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
 }
 
-export function isTursoDatabase(): boolean {
-  return !!(
-    process.env.TURSO_DATABASE_URL ??
-    process.env.DATABASE_URL?.startsWith("libsql:")
-  );
-}
+export { isTursoDatabase } from "@/lib/env";
