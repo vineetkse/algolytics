@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Algolytics
 
-## Getting Started
+Pattern-recognition training for coding interviews — drills, structured study plans, real problem judging, and mock interviews.
 
-First, run the development server:
+## Features
+
+- **Recognition drills** — pattern spotting, signal hunting, duels, gauntlet, decomposition
+- **62 coding problems** — mapped to 22 algorithmic patterns
+- **25+ judge-supported problems** — Run/Submit in JavaScript or Python
+- **24-week Zero to Google journey** — 168-day phased curriculum
+- **Mock coding interviews** — 45-min simulation with rubric and history
+- **Interview readiness dashboard** — verified solves, pattern mastery, mocks
+- **Training code auth** — no email; progress syncs via your code
+
+## Setup
 
 ```bash
+npm install
+cp .env.example .env
+# Set AUTH_SECRET to a long random string (required)
+# DATABASE_URL="file:dev.db" (relative paths resolve under prisma/)
+
+npm run db:push
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable | Description |
+|----------|-------------|
+| `AUTH_SECRET` | JWT signing secret (required in production) |
+| `DATABASE_URL` | SQLite path, e.g. `file:dev.db` |
 
-## Learn More
+## Scripts
 
-To learn more about Next.js, take a look at the following resources:
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start dev server |
+| `npm run build` | Production build |
+| `npm run db:push` | Sync Prisma schema to SQLite |
+| `npm run db:migrate` | Run migrations |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+src/
+  app/           # Next.js routes (train, problems, mock, journey, …)
+  components/    # UI (CodeEditor, ProblemWorkspace, …)
+  data/          # Patterns, problems, drills, journey content
+  lib/           # Progress, study plan, code runner, auth
+  hooks/         # useUserProgress, useUserStudyPlan
+prisma/          # SQLite schema
+```
 
-## Deploy on Vercel
+## Deploy to Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+See **[DEPLOY.md](./DEPLOY.md)** for step-by-step instructions.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Quick summary:
+
+1. Push repo to GitHub
+2. Create a [Turso](https://turso.tech) database and apply migrations (`scripts/apply-turso-migrations.sh`)
+3. Import the repo on [Vercel](https://vercel.com/new)
+4. Set env vars: `AUTH_SECRET`, `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN`
+5. Deploy
+
+Python code execution is disabled on Vercel; JavaScript judging works.
+
+## Code execution
+
+JavaScript runs in Node `vm`; Python via `python3` subprocess. Suitable for local/dev use. For public deployment, use an isolated runner (Docker) and rate limits.
+
+## License
+
+Private — all rights reserved.

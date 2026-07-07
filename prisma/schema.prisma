@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model TrainingProfile {
+  id           String        @id @default(cuid())
+  codeLookup   String        @unique
+  codeHash     String
+  codeHint     String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  progress     UserProgress?
+  studyPlan    UserStudyPlan?
+}
+
+model UserProgress {
+  id             String          @id @default(cuid())
+  profileId      String          @unique
+  profile        TrainingProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  totalDrills    Int             @default(0)
+  correctDrills  Int             @default(0)
+  streak         Int             @default(0)
+  lastTrainedAt  DateTime?
+  patternMastery String          @default("{}")
+  sessions       String          @default("[]")
+  problemProgress String         @default("{}")
+  mockInterviews  String         @default("[]")
+  lastDailyWorkoutAt DateTime?
+  updatedAt      DateTime        @updatedAt
+}
+
+model UserStudyPlan {
+  id        String          @id @default(cuid())
+  profileId String          @unique
+  profile   TrainingProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  planData  String
+  updatedAt DateTime        @updatedAt
+}
