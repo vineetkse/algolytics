@@ -1,5 +1,5 @@
 import path from "path";
-import { PrismaClient } from "@/generated/prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { PrismaLibSQL } from "@prisma/adapter-libsql/web";
 import { getTursoConfig } from "@/lib/env";
 
